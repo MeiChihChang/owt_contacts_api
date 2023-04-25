@@ -9,7 +9,23 @@ import (
 
 	"github.com/MeiChihChang/owt_contacts_api/internal/repository"
 	"github.com/MeiChihChang/owt_contacts_api/internal/repository/dbrepo"
+	//_ "swaggerexample/docs"
 )
+
+// @title        OWT Contact API documentation
+// @version      0.1
+// @description  A collection of fun related api endpoints.
+// termsOfService  http://swagger.io/terms/
+// @x-logo       {"url": "https://example.com/img.png", "backgroundColor": "#000000", "altText": "example logo", "href": "https://example.com/img.png"}
+
+// contact.name   API Support
+// @contact.url   https://gophercoding.com
+// contact.email  support@gophercoding.com
+
+// @host                        api.gophercoding.com
+// @securityDefinitions.apikey  ApiKeyAuth
+// @in                          header
+// @name                        Authorization
 
 const portNumber = 8080
 
@@ -30,7 +46,7 @@ func main() {
 	// set application config
 
 	// read from command line
-	flag.StringVar(&app.DSN, "dsn", "host=localhost port=5432 user=postgres password=postgres dbname=owt sslmode=disable timezone=UTC connect_timeout=5", "Postgres connection string")
+	flag.StringVar(&app.DSN, "dsn", "host=database port=5432 user=postgres password=postgres dbname=owt sslmode=disable timezone=UTC connect_timeout=5", "Postgres connection string")
 	flag.StringVar(&app.JWTSecret, "jwt-secret", "verysecret", "signing secret")
 	flag.StringVar(&app.JWTIssuer, "jwt-issuer", "owt.com", "signing issuer")
 	flag.StringVar(&app.JWTAudience, "jwt-audience", "owt.com", "signing audience")

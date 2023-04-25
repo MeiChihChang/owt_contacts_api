@@ -16,6 +16,15 @@ import (
 	"github.com/go-passwd/validator"
 )
 
+// Authenticate  authenticate a user with email & password
+// @Summary      Authentication
+// @Description  authenticate a user with email & password
+// @Accept       json
+// @Produce      json
+// @Tags         Tools
+// @Security     JWTToken
+// @Success      200  {object}  RefreshToken
+// @Router       /authenticate [post]
 func (app *application) Authenticate(w http.ResponseWriter, r *http.Request) {
 	// read json payload
 	var requestPayload struct {
@@ -64,6 +73,15 @@ func (app *application) Authenticate(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusAccepted, tokens)
 }
 
+// InsertContact create a new contact with first_name, last_name, full_name, email, password, address, mobile, token
+// @Summary      InsertContact
+// @Description  create a new contact with first_name, last_name, full_name, email, password, address, mobile, token
+// @Accept       json
+// @Produce      json
+// @Tags         Tools
+// @Security     JWTToken
+// @Success      200  {object}  contact_id
+// @Router       /contact/new [put]
 func (app *application) InsertContact(w http.ResponseWriter, r *http.Request) {
 	var contact models.Contact
 	err := app.readJSON(w, r, &contact)
@@ -121,6 +139,15 @@ func (app *application) InsertContact(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusAccepted, resp)
 }
 
+// AllContacts   list all contacts with token
+// @Summary      AllContacts
+// @Description  list all contacts with token
+// @Accept       json
+// @Produce      json
+// @Tags         Tools
+// @Security     JWTToken
+// @Success      200  {object}  [] contact
+// @Router       /contact/all [get]
 func (app *application) AllContacts(w http.ResponseWriter, r *http.Request) {
 	contacts, err := app.DB.AllContacts()
 	if err != nil {
@@ -131,6 +158,15 @@ func (app *application) AllContacts(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, contacts)
 }
 
+// GetContact    get a contact with id, token
+// @Summary      GetContact
+// @Description  get a contact with id, token
+// @Accept       json
+// @Produce      json
+// @Tags         Tools
+// @Security     JWTToken
+// @Success      200  {object}  contact
+// @Router       /contact/{id} [get]
 func (app *application) GetContact(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	contactID, err := strconv.Atoi(id)
@@ -148,6 +184,15 @@ func (app *application) GetContact(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, contact)
 }
 
+// UpdateContact update a contact by id with first_name, last_name, full_name, email, password, address, mobile & []skillids, token
+// @Summary      UpdateContact
+// @Description  update a contact by id with content and skills, token
+// @Accept       json
+// @Produce      json
+// @Tags         Tools
+// @Security     JWTToken
+// @Success      200  {object}  Success
+// @Router       /contact/update/{id} [patch]
 func (app *application) UpdateContact(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
@@ -233,6 +278,15 @@ func (app *application) UpdateContact(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusAccepted, resp)
 }
 
+// DeleteContact delete a contact with id, token
+// @Summary      DeleteContact
+// @Description  delete a contact with id, token
+// @Accept       json
+// @Produce      json
+// @Tags         Tools
+// @Security     JWTToken
+// @Success      200  {object}  Success
+// @Router       /contact/{id} [get]
 func (app *application) DeleteContact(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
@@ -254,6 +308,15 @@ func (app *application) DeleteContact(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusAccepted, resp)
 }
 
+// InsertSkill   create a new skill with name, level, token
+// @Summary      InsertSkill
+// @Description  create a new skill with name, level, token
+// @Accept       json
+// @Produce      json
+// @Tags         Tools
+// @Security     JWTToken
+// @Success      200  {object}  skill_id
+// @Router       /skill/new [put]
 func (app *application) InsertSkill(w http.ResponseWriter, r *http.Request) {
 	var skill models.Skill
 
@@ -293,6 +356,15 @@ func (app *application) InsertSkill(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusAccepted, resp)
 }
 
+// AllSkills     list all skills with token
+// @Summary      AllSkills
+// @Description  list all skills with token
+// @Accept       json
+// @Produce      json
+// @Tags         Tools
+// @Security     JWTToken
+// @Success      200  {object}  [] skills
+// @Router       /skill/all [get]
 func (app *application) AllSkills(w http.ResponseWriter, r *http.Request) {
 	skills, err := app.DB.AllSkills()
 	if err != nil {
@@ -303,6 +375,15 @@ func (app *application) AllSkills(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, skills)
 }
 
+// GetSkill      get a skill with id, token
+// @Summary      GetSkill
+// @Description  get a skill with id, token
+// @Accept       json
+// @Produce      json
+// @Tags         Tools
+// @Security     JWTToken
+// @Success      200  {object}  skill
+// @Router       /skill/{id} [get]
 func (app *application) GetSkill(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	skillID, err := strconv.Atoi(id)
@@ -320,6 +401,15 @@ func (app *application) GetSkill(w http.ResponseWriter, r *http.Request) {
 	_ = app.writeJSON(w, http.StatusOK, skill)
 }
 
+// UpdateSkill   update a skill by id with name, level, token
+// @Summary      UpdateSkill
+// @Description  update a skill by id with with name, level, token
+// @Accept       json
+// @Produce      json
+// @Tags         Tools
+// @Security     JWTToken
+// @Success      200  {object}  Success
+// @Router       /skill/update/{id} [patch]
 func (app *application) UpdateSkill(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	skillID, err := strconv.Atoi(id)
@@ -371,6 +461,15 @@ func (app *application) UpdateSkill(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusAccepted, resp)
 }
 
+// DeleteSkill   delete a skill with id, token
+// @Summary      DeleteSkill
+// @Description  delete a skill with id, token
+// @Accept       json
+// @Produce      json
+// @Tags         Tools
+// @Security     JWTToken
+// @Success      200  {object}  Success
+// @Router       /skill/{id} [delete]
 func (app *application) DeleteSkill(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {

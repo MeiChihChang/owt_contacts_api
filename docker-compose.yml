@@ -1,23 +1,47 @@
 version: '3.9'
 
 services:
-
   database:
-    image: 'postgres:9.6-alpine'
-    restart: always
+    image: 'postgres:14.5'
+    container_name: owt_postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: owt
+      - POSTGRES_USER=postgres  
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=owt
     ports:
       - '5432:5432'
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
-  
-  pgadmin:
-    image: chorss/docker-pgadmin4
-    ports:
-      - 5050:5050 
+      - ./postgres-data:/srv/lib/postgresql/11/data
+    networks:
+      - fullstack
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 5s
+      retries: 5 
 
-        
+  app:
+    container_name: owt_web_server
+    build: .
+    networks:
+      - fullstack
+    links:
+      - database  
+    depends_on:
+      database:                       
+        condition: 'service_healthy'
+    environment: # Sample env variables for pdocker-compose up -droducer
+      - POSTGRESQL_URL=postgres://postgres:postgres@database:5432/owt?sslmode=disable
+    ports:
+      - '8080:8080' 
+    volumes:
+      - /home/chang_m/usr/chang_m/data/:/data  
+      - /home/chang_m/usr/chang_m/tmp/:/tmp  
+  
+volumes:
+  data:    
+    external: true
+
+networks:
+  fullstack:
+    driver: bridge
