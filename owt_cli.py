@@ -43,11 +43,12 @@ def authenticate(email, password):
     except ConnectionError:
         print("all contacts:, OWT server connection failed, please check your network/firewall or report scicat server connection error to") 
         return 
+    
     print(resp)
        
-    if resp.ok:
-        result = resp.json()
-        print(result)
+    
+    result = resp.json()
+    print(result)
     return
 
 def newContact(first_name, last_name, full_name, address, mobile, email, password, skillid1, skillid2, auth_token):

@@ -5,27 +5,38 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/MeiChihChang/owt_contacts_api/internal/repository"
 	"github.com/MeiChihChang/owt_contacts_api/internal/repository/dbrepo"
-	//_ "swaggerexample/docs"
+	"github.com/gin-gonic/gin"
+
+	swaggerFiles "github.com/swaggo/files"
+	swagger "github.com/swaggo/gin-swagger"
+
+	_ "github.com/MeiChihChang/owt_contacts_api/cmd/api/docs"
 )
 
-// @title        OWT Contact API documentation
-// @version      0.1
-// @description  A collection of fun related api endpoints.
-// termsOfService  http://swagger.io/terms/
-// @x-logo       {"url": "https://example.com/img.png", "backgroundColor": "#000000", "altText": "example logo", "href": "https://example.com/img.png"}
+// @title           OWT Swagger API
+// @version         1.0
+// @description     This is a sample contacts server.
+// @termsOfService  http://swagger.io/terms/
 
-// contact.name   API Support
-// @contact.url   https://gophercoding.com
-// contact.email  support@gophercoding.com
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
 
-// @host                        api.gophercoding.com
-// @securityDefinitions.apikey  ApiKeyAuth
-// @in                          header
-// @name                        Authorization
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8000
+// @BasePath  /
+
+// @securityDefinitions.basic  BasicAuth
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 
 const portNumber = 8080
 
@@ -33,7 +44,6 @@ type application struct {
 	DSN          string
 	DB           repository.DatabaseRepo
 	auth         Auth
-	Domain       string
 	JWTSecret    string
 	JWTIssuer    string
 	JWTAudience  string
@@ -43,7 +53,10 @@ type application struct {
 var app application
 
 func main() {
-	// set application config
+	swagger := os.Getenv("ENABLE_SWAGGER")
+	if swagger == "true" {
+		Prepare()
+	}
 
 	// read from command line
 	flag.StringVar(&app.DSN, "dsn", "host=database port=5432 user=postgres password=postgres dbname=owt sslmode=disable timezone=UTC connect_timeout=5", "Postgres connection string")
@@ -51,7 +64,6 @@ func main() {
 	flag.StringVar(&app.JWTIssuer, "jwt-issuer", "owt.com", "signing issuer")
 	flag.StringVar(&app.JWTAudience, "jwt-audience", "owt.com", "signing audience")
 	flag.StringVar(&app.CookieDomain, "cookie-domain", "localhost", "cookie domain")
-	flag.StringVar(&app.Domain, "domain", "localhost", "domain")
 	flag.Parse()
 
 	// connect to the database
@@ -85,14 +97,25 @@ func main() {
 
 	// start a web server
 	srv := &http.Server{
-		Addr:    app.Domain + fmt.Sprintf(":%v", portNumber),
+		Addr:    fmt.Sprintf(":%v", portNumber),
 		Handler: routes(&app),
 	}
 
-	log.Printf("Starting application at %s", app.Domain+fmt.Sprintf(":%v", portNumber))
+	log.Printf("Starting application on port %s", fmt.Sprintf(":%v", portNumber))
 
 	err = srv.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func Prepare() {
+
+	// Use gin to create the server
+	router := gin.Default()
+
+	// Create other urls, etc but add swagger like this - notice url is removed
+	router.GET("/swagger/*any", swagger.WrapHandler(swaggerFiles.Handler))
+
+	router.Run(":8000")
 }

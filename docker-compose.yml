@@ -11,14 +11,17 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./postgres-data:/srv/lib/postgresql/11/data
+      - ./postgres-data:/var/lib/postgresql/data
+          # copy the sql script to create tables
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
     networks:
       - fullstack
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 30s
       timeout: 5s
-      retries: 5 
+      retries: 5   
+
 
   app:
     container_name: owt_web_server
@@ -29,14 +32,16 @@ services:
       - database  
     depends_on:
       database:                       
-        condition: 'service_healthy'
+        condition: 'service_healthy'                     
     environment: # Sample env variables for pdocker-compose up -droducer
       - POSTGRESQL_URL=postgres://postgres:postgres@database:5432/owt?sslmode=disable
+      - ENABLE_SWAGGER=false
     ports:
-      - '8080:8080' 
+      - '8080:8080'
+      - '8000:8000' 
     volumes:
-      - /home/chang_m/usr/chang_m/data/:/data  
-      - /home/chang_m/usr/chang_m/tmp/:/tmp  
+      - ~/data/:/data  
+      - ~/tmp/:/tmp  
   
 volumes:
   data:    

@@ -19,11 +19,12 @@ import (
 // Authenticate  authenticate a user with email & password
 // @Summary      Authentication
 // @Description  authenticate a user with email & password
+// @Param   string      query     string     false  "email"       minlength(5)  maxlength(255)
+// @Param   string      query     string     false  "password"    minlength(1)    maxlength(255)
 // @Accept       json
 // @Produce      json
 // @Tags         Tools
-// @Security     JWTToken
-// @Success      200  {object}  RefreshToken
+// @Success      200 {object} JSONResponse{data=TokenPairs}
 // @Router       /authenticate [post]
 func (app *application) Authenticate(w http.ResponseWriter, r *http.Request) {
 	// read json payload
@@ -76,11 +77,18 @@ func (app *application) Authenticate(w http.ResponseWriter, r *http.Request) {
 // InsertContact create a new contact with first_name, last_name, full_name, email, password, address, mobile, token
 // @Summary      InsertContact
 // @Description  create a new contact with first_name, last_name, full_name, email, password, address, mobile, token
+// @Param   string      query     string     false  "first_name"       minlength(1)  maxlength(20)
+// @Param   string      query     string     false  "last_name"    minlength(1)    maxlength(20)
+// @Param   string      query     string     false  "full_name"    minlength(3)    maxlength(40)
+// @Param   string      query     string     false  "email"       minlength(5)  maxlength(255)
+// @Param   string      query     string     false  "password"    minlength(1)    maxlength(255)
+// @Param   string      query     string     false  "address"    minlength(1)    maxlength(255)
+// @Param   string      query     string     false  "phone number"    minlength(1)    maxlength(20)
 // @Accept       json
 // @Produce      json
 // @Tags         Tools
-// @Security     JWTToken
-// @Success      200  {object}  contact_id
+// @SecurityDefinitions.basic BasicAuth
+// @Success      200 {object} JSONResponse{data=int}
 // @Router       /contact/new [put]
 func (app *application) InsertContact(w http.ResponseWriter, r *http.Request) {
 	var contact models.Contact
@@ -145,8 +153,8 @@ func (app *application) InsertContact(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Tags         Tools
-// @Security     JWTToken
-// @Success      200  {object}  [] contact
+// @SecurityDefinitions.basic BasicAuth
+// @Success      200 {object} JSONResponse{}
 // @Router       /contact/all [get]
 func (app *application) AllContacts(w http.ResponseWriter, r *http.Request) {
 	contacts, err := app.DB.AllContacts()
@@ -161,11 +169,12 @@ func (app *application) AllContacts(w http.ResponseWriter, r *http.Request) {
 // GetContact    get a contact with id, token
 // @Summary      GetContact
 // @Description  get a contact with id, token
+// @Param int         query     int        false  "contact id"          minimum(0)    maximum(65535)
 // @Accept       json
 // @Produce      json
 // @Tags         Tools
-// @Security     JWTToken
-// @Success      200  {object}  contact
+// @SecurityDefinitions.basic BasicAuth
+// @Success      200 {object} JSONResponse{}
 // @Router       /contact/{id} [get]
 func (app *application) GetContact(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
@@ -187,11 +196,18 @@ func (app *application) GetContact(w http.ResponseWriter, r *http.Request) {
 // UpdateContact update a contact by id with first_name, last_name, full_name, email, password, address, mobile & []skillids, token
 // @Summary      UpdateContact
 // @Description  update a contact by id with content and skills, token
+// @Param int         query     int        false  "contact id"          minimum(0)    maximum(65535)
+// @Param   string      query     string     false  "first_name"       minlength(1)  maxlength(20)
+// @Param   string      query     string     false  "last_name"    minlength(1)    maxlength(20)
+// @Param   string      query     string     false  "full_name"    minlength(3)    maxlength(40)
+// @Param   string      query     string     false  "email"       minlength(5)  maxlength(255)
+// @Param   string      query     string     false  "address"    minlength(1)    maxlength(255)
+// @Param   string      query     string     false  "phone number"    minlength(1)    maxlength(20)
 // @Accept       json
 // @Produce      json
 // @Tags         Tools
-// @Security     JWTToken
-// @Success      200  {object}  Success
+// @SecurityDefinitions.basic BasicAuth
+// @Success      200 {object} JSONResponse{message=string}
 // @Router       /contact/update/{id} [patch]
 func (app *application) UpdateContact(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -281,12 +297,13 @@ func (app *application) UpdateContact(w http.ResponseWriter, r *http.Request) {
 // DeleteContact delete a contact with id, token
 // @Summary      DeleteContact
 // @Description  delete a contact with id, token
+// @Param int         query     int        false  "contact id"          minimum(0)    maximum(65535)
 // @Accept       json
 // @Produce      json
 // @Tags         Tools
-// @Security     JWTToken
-// @Success      200  {object}  Success
-// @Router       /contact/{id} [get]
+// @SecurityDefinitions.basic BasicAuth
+// @Success      200 {object} JSONResponse{message=string}
+// @Router       /delete/{id} [get]
 func (app *application) DeleteContact(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
@@ -311,11 +328,13 @@ func (app *application) DeleteContact(w http.ResponseWriter, r *http.Request) {
 // InsertSkill   create a new skill with name, level, token
 // @Summary      InsertSkill
 // @Description  create a new skill with name, level, token
+// @Param   string      query     string     false  "name"       minlength(1)  maxlength(20)
+// @Param int         query     int        false  "level"          minimum(0)    maximum(4)
 // @Accept       json
 // @Produce      json
 // @Tags         Tools
-// @Security     JWTToken
-// @Success      200  {object}  skill_id
+// @SecurityDefinitions.basic BasicAuth
+// @Success      200 {object} JSONResponse{data=int}
 // @Router       /skill/new [put]
 func (app *application) InsertSkill(w http.ResponseWriter, r *http.Request) {
 	var skill models.Skill
@@ -362,8 +381,8 @@ func (app *application) InsertSkill(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Tags         Tools
-// @Security     JWTToken
-// @Success      200  {object}  [] skills
+// @SecurityDefinitions.basic BasicAuth
+// @Success      200 {object} JSONResponse{}
 // @Router       /skill/all [get]
 func (app *application) AllSkills(w http.ResponseWriter, r *http.Request) {
 	skills, err := app.DB.AllSkills()
@@ -378,11 +397,12 @@ func (app *application) AllSkills(w http.ResponseWriter, r *http.Request) {
 // GetSkill      get a skill with id, token
 // @Summary      GetSkill
 // @Description  get a skill with id, token
+// @Param int         query     int        false  "skill id"          minimum(0)    maximum(65535)
 // @Accept       json
 // @Produce      json
 // @Tags         Tools
-// @Security     JWTToken
-// @Success      200  {object}  skill
+// @SecurityDefinitions.basic BasicAuth
+// @Success      200 {object} JSONResponse{data=int}
 // @Router       /skill/{id} [get]
 func (app *application) GetSkill(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
@@ -404,11 +424,13 @@ func (app *application) GetSkill(w http.ResponseWriter, r *http.Request) {
 // UpdateSkill   update a skill by id with name, level, token
 // @Summary      UpdateSkill
 // @Description  update a skill by id with with name, level, token
+// @Param int         query     int        false  "skill id"          minimum(0)    maximum(65535)
+// @Param int         query     int        false  "level"          minimum(0)    maximum(4)
 // @Accept       json
 // @Produce      json
 // @Tags         Tools
-// @Security     JWTToken
-// @Success      200  {object}  Success
+// @SecurityDefinitions.basic BasicAuth
+// @Success      200 {object} JSONResponse{message=string}
 // @Router       /skill/update/{id} [patch]
 func (app *application) UpdateSkill(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
@@ -464,11 +486,12 @@ func (app *application) UpdateSkill(w http.ResponseWriter, r *http.Request) {
 // DeleteSkill   delete a skill with id, token
 // @Summary      DeleteSkill
 // @Description  delete a skill with id, token
+// @Param int         query     int        false  "skill id"          minimum(0)    maximum(65535)
 // @Accept       json
 // @Produce      json
 // @Tags         Tools
-// @Security     JWTToken
-// @Success      200  {object}  Success
+// @SecurityDefinitions.basic BasicAuth
+// @Success      200 {object} JSONResponse{message=string}
 // @Router       /skill/{id} [delete]
 func (app *application) DeleteSkill(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
