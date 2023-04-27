@@ -1,5 +1,5 @@
 # owt_contacts_api
-## Contacts API“. It’s a simple API, where a user can get a quick overview over all contacts resources like person and skills
+## “Contacts API“. It’s a simple API, where a user can get a quick overview over all contacts resources like person and skills. It is implemented by go and uses JWT token for authentication.
 
 The following use cases are implemented:
 ## UC1
